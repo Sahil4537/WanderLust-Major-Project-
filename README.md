@@ -1,1 +1,2 @@
-# WanderLust-Major-Project-
+# WanderLust(Major-Project)
+
