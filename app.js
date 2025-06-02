@@ -51,6 +51,7 @@ app.get("/listings/:id", async (req, res) => {
 });
 
 //Create Route
+//Create Route
 app.post("/listings", async (req, res) => {
   const newListing = new Listing(req.body.listing);
   await newListing.save();
