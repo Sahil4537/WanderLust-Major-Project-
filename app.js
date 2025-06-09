@@ -9,7 +9,7 @@ const wrapAsync = require("./utils/wrapAsync.js");
 const ExpressError = require("./utils/ExpressError.js");
 const { wrap } = require("module");
 const cors = require("cors");
-
+const { listingSchema } = require("./schema.js");
 
 
 const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
@@ -39,6 +39,16 @@ app.get("/", (req, res) => {
   res.send("Hi, I am root");
 });
 
+const validateListing = (req, res, next) => {
+  let {error} = listingSchema.validate(req.body);  //yeh line schema validate krri gi with the help of joi.
+  if(error) {  //joi ne individual fields k upr validation error apply krdia.
+    let errMsg = error.details.map((el) => el.message).join(",");
+    throw new ExpressError(404, errMsg);
+  } else {
+    next();
+  }
+};
+
 //Index Route
 app.get("/listings", wrapAsync(async (req, res) => {
   const allListings = await Listing.find({});
@@ -58,10 +68,9 @@ app.get("/listings/:id", wrapAsync(async (req, res, next) => {
 }));
 
 //Create Route
-app.post("/listings", wrapAsync(async (req, res) => {
-  if(!req.body.listings) {
-    throw new ExpressError(400, "Send Valid Data for Listing");
-  }
+app.post("/listings",  //phale listing aaygi
+  validateListing,     //then first usko validate krra jaega
+  wrapAsync(async (req, res) => {  //tbhi aage ka kaaam hai woo krenge
   const newListing = new Listing(req.body.listing);
   await newListing.save();
   res.redirect("/listings");
@@ -75,10 +84,12 @@ app.get("/listings/:id/edit", wrapAsync(async (req, res) => {
 }));
 
 //Update Route
-app.put("/listings/:id", wrapAsync(async (req, res) => {
-  if(!req.body.listings) {
-    throw new ExpressError(400, "Send Valid Data for Listing");
-  }
+app.put("/listings/:id",
+  validateListing,  //listing aane pr phale vlaidate hongi cheje
+  wrapAsync(async (req, res) => {
+  // if(!req.body.listings) { //ab inn line ka koi mtlb ni sb joi krega validate
+  //   throw new ExpressError(400, "Send Valid Data for Listing");
+  // }
   let { id } = req.params;
   await Listing.findByIdAndUpdate(id, { ...req.body.listing });
   res.redirect(`/listings/${id}`);
