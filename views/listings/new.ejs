@@ -3,14 +3,19 @@
     <div class="col-8 offset-2 mt-3">
   
     <h3>Create a New Listings</h3>
-    <form method="POST" action="/listings" novalidate class="needs-validation">
-        <div>
-            <div class="mb-3">
-            <label for="title" class="form-lable">Title</label>
-            <input name="listing[title]" placeholder="enter title here" type="text" class="form-control" required/>
-            <div class="valid-feedback">Title looks good.</div>
-            <div class="invalid-feedback">Please enter title.</div>
-        </div>
+    <form 
+        method="POST" 
+        action="/listings" 
+        novalidate 
+        class="needs-validation" 
+        enctype="multipart/form-data">
+            <div>
+             <div class="mb-3">
+             <label for="title" class="form-lable">Title</label>
+             <input name="listing[title]" placeholder="enter title here" type="text" class="form-control" required/>
+             <div class="valid-feedback">Title looks good.</div>
+             <div class="invalid-feedback">Please enter title.</div>
+            </div>
       
         <div class="mb-3">
             <label for="description" class="form-lable">Description</label>
@@ -18,11 +23,13 @@
         <textarea name="listing[description]" placeholder="enter description here" class="form-control" required></textarea>
         <div class="invalid-feedback">Please enter description.</div>
         </div>
-        <div class="mb-3">
-            <label for="image" class="form-lable">Image Link</label>
-            <input name="listing[image][url]" placeholder="enter image URL/link here" type="text" class="form-control" />
-            <input type="hidden" name="listing[image][filename]" value="listingimage" />
+        
+         <div class="mb-3">
+            <label for="image" class="form-lable">Upload Image</label>
+            <input name="listing[image]" type="file" class="form-control" />
+            <input type="hidden" name="listing[image][filename]" value="listingimage" required/>
         </div>
+
         <div class="row">
             <div class="mb-3 col-md-4">
                 <label for="price" class="form-lable">Price</label>
