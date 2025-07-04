@@ -13,7 +13,7 @@ const ExpressError = require("./utils/ExpressError.js");
 const { wrap } = require("module");
 const cors = require("cors");
 const session = require("express-session");
-const MongoStore = require('connect-mongo');
+const MongoStore = require("connect-mongo");
 const flash = require("connect-flash");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
@@ -29,8 +29,8 @@ const userRouter = require("./routes/user.js");
 const dbUrl = process.env.ATLASDB_URL;
 
 mongoose.connect(dbUrl, {
-useNewUrlParser: true,
-  useUnifiedTopology: true,
+  useNewUrlParser: false,
+  useUnifiedTopology: false,
   serverSelectionTimeoutMS: 30000, // Give it 30 seconds to connect
   socketTimeoutMS: 45000,
 })
@@ -39,12 +39,6 @@ useNewUrlParser: true,
 })
 .catch(err => {
   console.error('MongoDB connection error:', err);
-})
-// End of .then() block for mongoose.connect
-.catch(err => {
-  console.error("CRITICAL ERROR: Failed to connect to MongoDB Atlas during startup:");
-  console.error(JSON.stringify(err, null, 2)); // Log full error details
-  process.exit(1); // Crucial: Exit the process if DB connection fails
 });
 
 
@@ -78,42 +72,17 @@ const store = MongoStore.create({
   touchAfter: 24 * 3600,
 });
 
-
-
 store.on("error", () => {
   console.log("Error in mongo-session store", err)
 });
 
-app.set('trust proxy', 1); // Essential for Render if using secure cookies
-  app.use(session({
-    store: store,
-    secret: process.env.SECRET || 'aVerySecretFallbackKey', // GET THIS FROM RENDER ENV VARS!
-    resave: false,
-    saveUninitialized: true,
-    cookie: {
-      expires: Date.now() + 7 * 24 * 60 * 60 * 1000, // 7 days
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-      httpOnly: true,
-      secure: true // Crucial for production; Render handles HTTPS
-    }
-  }));
-
-  app.use(express.urlencoded({ extended: true }));
-  app.use(express.static('public')); 
-
-  const PORT = process.env.PORT || 8080;
-  app.listen(PORT, () => {
-    console.log(`Server is listening to port ${PORT}`);
-  });
-
-
 const sessionOptions = {
-  store,
+  store: store,
   secret: process.env.SECRET,
   resave: false,
   saveUninitialized: true,
   cookie:{
-    expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    expires: Date.now() + 7 * 24 * 60 * 60 * 1000,
     maxAge: 7 * 24 * 60 * 60 * 1000,
     httpOnly: true,
   },
