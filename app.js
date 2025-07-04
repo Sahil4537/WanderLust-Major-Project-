@@ -25,6 +25,10 @@ const reviewsRouter = require("./routes/review.js");
 const userRouter = require("./routes/user.js");
 
 
+app.get('/', (req, res) => {
+    res.send('Welcome to Wanderlust! Your server is working.');
+});
+
 //const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
 const dbUrl = process.env.ATLASDB_URL;
 
